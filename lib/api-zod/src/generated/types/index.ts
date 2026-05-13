@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from "./budgetStatus";
 export * from "./focusDaySummary";
 export * from "./focusSession";
 export * from "./focusSessionInput";
@@ -13,6 +14,7 @@ export * from "./getWeatherParams";
 export * from "./healthStatus";
 export * from "./newsArticle";
 export * from "./quote";
+export * from "./spendInput";
 export * from "./todo";
 export * from "./todoInput";
 export * from "./todoUpdate";

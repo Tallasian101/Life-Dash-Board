@@ -19,6 +19,8 @@ tags:
     description: Daily inspirational quote
   - name: focus
     description: Focus mode session tracking
+  - name: budget
+    description: Monthly budget tracking
 paths:
   /healthz:
     get:
@@ -180,6 +182,40 @@ paths:
                 items:
                   $ref: "#/components/schemas/FocusDaySummary"
 
+  /budget/status:
+    get:
+      operationId: getBudgetStatus
+      tags: [budget]
+      summary: Get current month budget status
+      responses:
+        "200":
+          description: Budget status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BudgetStatus"
+
+  /budget/spend:
+    post:
+      operationId: recordSpend
+      tags: [budget]
+      summary: Record a spend transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SpendInput"
+      responses:
+        "201":
+          description: Transaction recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BudgetStatus"
+        "400":
+          description: Invalid input
+
   /quote:
     get:
       operationId: getDailyQuote
@@ -270,6 +306,27 @@ components:
           minLength: 1
         completed:
           type: boolean
+
+    BudgetStatus:
+      type: object
+      required: [monthlyLimit, spent, remaining]
+      properties:
+        monthlyLimit:
+          type: number
+        spent:
+          type: number
+        remaining:
+          type: number
+
+    SpendInput:
+      type: object
+      required: [amount]
+      properties:
+        amount:
+          type: number
+          minimum: 0.01
+        description:
+          type: ["string", "null"]
 
     FocusSessionInput:
       type: object

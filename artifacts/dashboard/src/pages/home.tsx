@@ -3,6 +3,7 @@ import { NewsWidget } from "@/components/widgets/NewsWidget";
 import { TodoWidget } from "@/components/widgets/TodoWidget";
 import { QuoteWidget } from "@/components/widgets/QuoteWidget";
 import { FocusWidget } from "@/components/widgets/FocusWidget";
+import { BudgetWidget } from "@/components/widgets/BudgetWidget";
 import { Clock } from "@/components/widgets/Clock";
 import { LayoutDashboard } from "lucide-react";
 
@@ -45,8 +46,12 @@ export default function Home() {
             <QuoteWidget />
           </div>
 
-          <div className="h-[320px] md:col-span-2 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500 fill-mode-both">
+          <div className="h-[320px] animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500 fill-mode-both">
             <FocusWidget />
+          </div>
+
+          <div className="h-[320px] animate-in fade-in slide-in-from-bottom-4 duration-700 delay-[600ms] fill-mode-both">
+            <BudgetWidget />
           </div>
         </main>
       </div>

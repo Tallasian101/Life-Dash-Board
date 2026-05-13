@@ -17,6 +17,7 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  BudgetStatus,
   FocusDaySummary,
   FocusSession,
   FocusSessionInput,
@@ -24,6 +25,7 @@ import type {
   HealthStatus,
   NewsArticle,
   Quote,
+  SpendInput,
   Todo,
   TodoInput,
   TodoUpdate,
@@ -757,6 +759,167 @@ export function useGetFocusWeek<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * @summary Get current month budget status
+ */
+export const getGetBudgetStatusUrl = () => {
+  return `/api/budget/status`;
+};
+
+export const getBudgetStatus = async (
+  options?: RequestInit,
+): Promise<BudgetStatus> => {
+  return customFetch<BudgetStatus>(getGetBudgetStatusUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetBudgetStatusQueryKey = () => {
+  return [`/api/budget/status`] as const;
+};
+
+export const getGetBudgetStatusQueryOptions = <
+  TData = Awaited<ReturnType<typeof getBudgetStatus>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getBudgetStatus>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetBudgetStatusQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getBudgetStatus>>> = ({
+    signal,
+  }) => getBudgetStatus({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getBudgetStatus>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetBudgetStatusQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getBudgetStatus>>
+>;
+export type GetBudgetStatusQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get current month budget status
+ */
+
+export function useGetBudgetStatus<
+  TData = Awaited<ReturnType<typeof getBudgetStatus>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getBudgetStatus>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetBudgetStatusQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Record a spend transaction
+ */
+export const getRecordSpendUrl = () => {
+  return `/api/budget/spend`;
+};
+
+export const recordSpend = async (
+  spendInput: SpendInput,
+  options?: RequestInit,
+): Promise<BudgetStatus> => {
+  return customFetch<BudgetStatus>(getRecordSpendUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(spendInput),
+  });
+};
+
+export const getRecordSpendMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof recordSpend>>,
+    TError,
+    { data: BodyType<SpendInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof recordSpend>>,
+  TError,
+  { data: BodyType<SpendInput> },
+  TContext
+> => {
+  const mutationKey = ["recordSpend"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof recordSpend>>,
+    { data: BodyType<SpendInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return recordSpend(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RecordSpendMutationResult = NonNullable<
+  Awaited<ReturnType<typeof recordSpend>>
+>;
+export type RecordSpendMutationBody = BodyType<SpendInput>;
+export type RecordSpendMutationError = ErrorType<void>;
+
+/**
+ * @summary Record a spend transaction
+ */
+export const useRecordSpend = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof recordSpend>>,
+    TError,
+    { data: BodyType<SpendInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof recordSpend>>,
+  TError,
+  { data: BodyType<SpendInput> },
+  TContext
+> => {
+  return useMutation(getRecordSpendMutationOptions(options));
+};
 
 /**
  * @summary Get today's daily quote

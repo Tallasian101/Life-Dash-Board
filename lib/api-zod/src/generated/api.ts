@@ -115,6 +115,25 @@ export const GetFocusWeekResponseItem = zod.object({
 export const GetFocusWeekResponse = zod.array(GetFocusWeekResponseItem);
 
 /**
+ * @summary Get current month budget status
+ */
+export const GetBudgetStatusResponse = zod.object({
+  monthlyLimit: zod.number(),
+  spent: zod.number(),
+  remaining: zod.number(),
+});
+
+/**
+ * @summary Record a spend transaction
+ */
+export const recordSpendBodyAmountMin = 0.01;
+
+export const RecordSpendBody = zod.object({
+  amount: zod.number().min(recordSpendBodyAmountMin),
+  description: zod.string().nullish(),
+});
+
+/**
  * @summary Get today's daily quote
  */
 export const GetDailyQuoteResponse = zod.object({

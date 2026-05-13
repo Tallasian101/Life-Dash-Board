@@ -49,6 +49,19 @@ export interface TodoUpdate {
   completed?: boolean;
 }
 
+export interface BudgetStatus {
+  monthlyLimit: number;
+  spent: number;
+  remaining: number;
+}
+
+export interface SpendInput {
+  /** @minimum 0.01 */
+  amount: number;
+  /** @nullable */
+  description?: string | null;
+}
+
 export interface FocusSessionInput {
   /** ISO date string YYYY-MM-DD */
   date: string;
