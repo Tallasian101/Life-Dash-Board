@@ -1,22 +1,28 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Personal Life Dashboard API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: weather
+    description: Weather information
+  - name: news
+    description: RSS news feed
+  - name: todos
+    description: To-do list management
+  - name: quote
+    description: Daily inspirational quote
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +30,133 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /weather:
+    get:
+      operationId: getWeather
+      tags: [weather]
+      summary: Get current weather
+      parameters:
+        - in: query
+          name: lat
+          schema:
+            type: number
+          description: Latitude (defaults to New York if omitted)
+        - in: query
+          name: lon
+          schema:
+            type: number
+          description: Longitude
+      responses:
+        "200":
+          description: Current weather data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Weather"
+
+  /news:
+    get:
+      operationId: getNews
+      tags: [news]
+      summary: Get latest news articles from RSS feeds
+      responses:
+        "200":
+          description: List of news articles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NewsArticle"
+
+  /todos:
+    get:
+      operationId: getTodos
+      tags: [todos]
+      summary: Get all to-do items
+      responses:
+        "200":
+          description: List of todos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Todo"
+    post:
+      operationId: createTodo
+      tags: [todos]
+      summary: Create a new to-do item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TodoInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+
+  /todos/{id}:
+    patch:
+      operationId: updateTodo
+      tags: [todos]
+      summary: Update a to-do item
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TodoUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteTodo
+      tags: [todos]
+      summary: Delete a to-do item
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /quote:
+    get:
+      operationId: getDailyQuote
+      tags: [quote]
+      summary: Get today's daily quote
+      responses:
+        "200":
+          description: Daily quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Quote"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +167,79 @@ components:
       required:
         - status
 
+    Weather:
+      type: object
+      required: [temperature, feelsLike, humidity, windSpeed, description, icon, city]
+      properties:
+        temperature:
+          type: number
+          description: Temperature in Celsius
+        feelsLike:
+          type: number
+        humidity:
+          type: integer
+        windSpeed:
+          type: number
+        description:
+          type: string
+        icon:
+          type: string
+          description: Weather condition code (e.g. "clear", "cloudy", "rainy")
+        city:
+          type: string
+
+    NewsArticle:
+      type: object
+      required: [id, title, source, url, publishedAt]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        source:
+          type: string
+        url:
+          type: string
+        publishedAt:
+          type: string
+        description:
+          type: ["string", "null"]
+
+    Todo:
+      type: object
+      required: [id, text, completed, createdAt]
+      properties:
+        id:
+          type: integer
+        text:
+          type: string
+        completed:
+          type: boolean
+        createdAt:
+          type: string
+
+    TodoInput:
+      type: object
+      required: [text]
+      properties:
+        text:
+          type: string
+          minLength: 1
+
+    TodoUpdate:
+      type: object
+      properties:
+        text:
+          type: string
+          minLength: 1
+        completed:
+          type: boolean
+
+    Quote:
+      type: object
+      required: [text, author]
+      properties:
+        text:
+          type: string
+        author:
+          type: string
