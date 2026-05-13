@@ -17,7 +17,6 @@ const QUOTES = [
   { text: "When you reach the end of your rope, tie a knot in it and hang on.", author: "Franklin D. Roosevelt" },
   { text: "Always remember that you are absolutely unique. Just like everyone else.", author: "Margaret Mead" },
   { text: "Don't judge each day by the harvest you reap but by the seeds that you plant.", author: "Robert Louis Stevenson" },
-  { text: "The real test is not whether you avoid failure — it's whether you let it harden or shame you into inaction.", author: "Barack Obama" },
   { text: "Yesterday is history, tomorrow is a mystery, today is a gift.", author: "Eleanor Roosevelt" },
   { text: "You must be the change you wish to see in the world.", author: "Mahatma Gandhi" },
   { text: "It is during our darkest moments that we must focus to see the light.", author: "Aristotle" },
@@ -30,23 +29,21 @@ const QUOTES = [
   { text: "Life is either a daring adventure or nothing at all.", author: "Helen Keller" },
   { text: "Many of life's failures are people who did not realize how close they were to success when they gave up.", author: "Thomas A. Edison" },
   { text: "You have brains in your head. You have feet in your shoes. You can steer yourself any direction you choose.", author: "Dr. Seuss" },
-  { text: "If life were predictable it would cease to be life, and be without flavor.", author: "Eleanor Roosevelt" },
-  { text: "If you look at what you have in life, you'll always have more.", author: "Oprah Winfrey" },
-  { text: "If you want to live a happy life, tie it to a goal, not to people or things.", author: "Albert Einstein" },
-  { text: "Never let the fear of striking out keep you from playing the game.", author: "Babe Ruth" },
-  { text: "Money and success don't change people; they merely amplify what is already there.", author: "Will Smith" },
   { text: "Your time is limited, so don't waste it living someone else's life.", author: "Steve Jobs" },
   { text: "Not how long, but how well you have lived is the main thing.", author: "Seneca" },
-  { text: "If life were predictable it would cease to be life, and be without flavor.", author: "Eleanor Roosevelt" },
-  { text: "If you want to live a happy life, tie it to a goal, not to people or things.", author: "Albert Einstein" },
+  { text: "You must be the change you wish to see in the world.", author: "Mahatma Gandhi" },
+  { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+  { text: "It always seems impossible until it's done.", author: "Nelson Mandela" },
+  { text: "Act as if what you do makes a difference. It does.", author: "William James" },
+  { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill" },
+  { text: "Happiness is not something ready-made. It comes from your own actions.", author: "Dalai Lama" },
+  { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
+  { text: "I have not failed. I've just found 10,000 ways that won't work.", author: "Thomas A. Edison" },
 ];
 
 router.get("/quote", (req, res) => {
-  const dayOfYear = Math.floor(
-    (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000
-  );
-  const quote = QUOTES[dayOfYear % QUOTES.length];
-  res.json(quote);
+  const randomIndex = Math.floor(Math.random() * QUOTES.length);
+  res.json(QUOTES[randomIndex]);
 });
 
 export default router;

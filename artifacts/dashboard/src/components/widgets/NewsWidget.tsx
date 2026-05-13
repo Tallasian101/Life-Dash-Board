@@ -13,7 +13,7 @@ export function NewsWidget() {
   });
 
   return (
-    <Card className="h-full flex flex-col bg-card/50 backdrop-blur border-white/5 overflow-hidden relative group">
+    <Card className="h-full flex flex-col bg-white/[0.04] backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] overflow-hidden relative group">
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium text-white/50 uppercase tracking-wider flex items-center gap-2">
