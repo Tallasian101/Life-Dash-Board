@@ -5,9 +5,11 @@
  * Personal Life Dashboard API
  * OpenAPI spec version: 0.1.0
  */
+import type { BudgetTransaction } from "./budgetTransaction";
 
 export interface BudgetStatus {
   monthlyLimit: number;
   spent: number;
   remaining: number;
+  transactions: BudgetTransaction[];
 }

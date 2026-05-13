@@ -49,10 +49,20 @@ export interface TodoUpdate {
   completed?: boolean;
 }
 
+export interface BudgetTransaction {
+  id: number;
+  amount: number;
+  /** @nullable */
+  description?: string | null;
+  month: string;
+  createdAt: string;
+}
+
 export interface BudgetStatus {
   monthlyLimit: number;
   spent: number;
   remaining: number;
+  transactions: BudgetTransaction[];
 }
 
 export interface SpendInput {

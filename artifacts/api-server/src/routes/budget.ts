@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { sql, sum } from "drizzle-orm";
+import { sql, sum, desc } from "drizzle-orm";
 import { db, budgetTransactionsTable } from "@workspace/db";
 import { RecordSpendBody } from "@workspace/api-zod";
 
@@ -18,10 +18,27 @@ async function buildStatus(month: string) {
     .from(budgetTransactionsTable)
     .where(sql`${budgetTransactionsTable.month} = ${month}`);
 
+  const rows = await db
+    .select()
+    .from(budgetTransactionsTable)
+    .where(sql`${budgetTransactionsTable.month} = ${month}`)
+    .orderBy(desc(budgetTransactionsTable.createdAt));
+
   const spent = Math.round(parseFloat(row?.total ?? "0") * 100) / 100;
   const remaining = Math.round((monthlyLimit - spent) * 100) / 100;
 
-  return { monthlyLimit, spent, remaining };
+  return {
+    monthlyLimit,
+    spent,
+    remaining,
+    transactions: rows.map((t) => ({
+      id: t.id,
+      amount: parseFloat(t.amount),
+      description: t.description,
+      month: t.month,
+      createdAt: t.createdAt.toISOString(),
+    })),
+  };
 }
 
 router.get("/budget/status", async (req, res) => {

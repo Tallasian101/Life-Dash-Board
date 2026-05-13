@@ -7,6 +7,7 @@
  */
 
 export * from "./budgetStatus";
+export * from "./budgetTransaction";
 export * from "./focusDaySummary";
 export * from "./focusSession";
 export * from "./focusSessionInput";

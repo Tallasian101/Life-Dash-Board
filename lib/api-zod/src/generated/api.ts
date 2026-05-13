@@ -121,6 +121,15 @@ export const GetBudgetStatusResponse = zod.object({
   monthlyLimit: zod.number(),
   spent: zod.number(),
   remaining: zod.number(),
+  transactions: zod.array(
+    zod.object({
+      id: zod.number(),
+      amount: zod.number(),
+      description: zod.string().nullish(),
+      month: zod.string(),
+      createdAt: zod.string(),
+    }),
+  ),
 });
 
 /**

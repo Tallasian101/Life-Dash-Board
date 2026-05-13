@@ -50,7 +50,7 @@ export default function Home() {
             <FocusWidget />
           </div>
 
-          <div className="h-[320px] animate-in fade-in slide-in-from-bottom-4 duration-700 delay-[600ms] fill-mode-both">
+          <div className="h-[520px] animate-in fade-in slide-in-from-bottom-4 duration-700 delay-[600ms] fill-mode-both">
             <BudgetWidget />
           </div>
         </main>

@@ -7,7 +7,9 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Wallet } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Wallet, Receipt } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 
 const GAUGE_R = 80;
@@ -68,33 +70,35 @@ export function BudgetWidget() {
   const pct = limit > 0 ? Math.max(0, Math.min(1, remaining / limit)) : 0;
   const dashLength = pct * SEMI_CIRC;
   const color = gaugeColor(pct);
+  const transactions = budget?.transactions ?? [];
 
   const arcPath = `M ${GAUGE_CX - GAUGE_R} ${GAUGE_CY} A ${GAUGE_R} ${GAUGE_R} 0 0 1 ${GAUGE_CX + GAUGE_R} ${GAUGE_CY}`;
 
   return (
     <Card className="h-full flex flex-col bg-white/[0.04] backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.06)] overflow-hidden relative group">
       <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-2 shrink-0">
         <CardTitle className="text-sm font-medium text-white/50 uppercase tracking-wider flex items-center gap-2">
           <Wallet className="w-4 h-4" /> Monthly Budget
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="flex-1 flex flex-col items-center gap-4 pb-4">
+      <CardContent className="flex-1 flex flex-col gap-4 pb-4 min-h-0">
         {isLoading || !budget ? (
           <div className="flex flex-col items-center gap-4 w-full">
             <Skeleton className="h-[110px] w-[220px] rounded-full bg-white/5" />
             <Skeleton className="h-9 w-full bg-white/5 rounded-lg" />
+            <div className="w-full space-y-2 mt-2">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-8 w-full bg-white/5 rounded-md" />
+              ))}
+            </div>
           </div>
         ) : (
           <>
-            <div className="relative flex items-end justify-center" style={{ height: 110 }}>
-              <svg
-                width={220}
-                height={110}
-                viewBox={`0 0 220 110`}
-                className="overflow-visible"
-              >
+            {/* Gauge */}
+            <div className="relative flex items-end justify-center shrink-0" style={{ height: 110 }}>
+              <svg width={220} height={110} viewBox="0 0 220 110" className="overflow-visible">
                 <path
                   d={arcPath}
                   fill="none"
@@ -115,39 +119,24 @@ export function BudgetWidget() {
                   }}
                 />
               </svg>
-
               <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center pb-1">
-                <span
-                  className="text-xl font-bold tabular-nums leading-tight"
-                  style={{ color }}
-                >
+                <span className="text-xl font-bold tabular-nums leading-tight" style={{ color }}>
                   ${fmt(remaining)}
                 </span>
                 <span className="text-[10px] text-white/40 tracking-wide mt-0.5">
                   of ${fmt(limit)} remaining
                 </span>
               </div>
-
-              <span
-                className="absolute text-[10px] font-medium text-white/30"
-                style={{ bottom: -2, left: 16 }}
-              >
-                $0
-              </span>
-              <span
-                className="absolute text-[10px] font-medium text-white/30"
-                style={{ bottom: -2, right: 16 }}
-              >
-                ${fmt(limit)}
-              </span>
+              <span className="absolute text-[10px] font-medium text-white/30" style={{ bottom: -2, left: 16 }}>$0</span>
+              <span className="absolute text-[10px] font-medium text-white/30" style={{ bottom: -2, right: 16 }}>${fmt(limit)}</span>
             </div>
 
-            <div className="w-full px-1">
+            {/* Spend form */}
+            <div className="w-full px-1 shrink-0">
               <div className="flex items-center justify-between text-xs text-white/40 mb-3">
                 <span>Spent this month</span>
                 <span className="font-mono text-white/60">${fmt(budget.spent)}</span>
               </div>
-
               <form onSubmit={handleSubtract} className="flex gap-2">
                 <input
                   type="number"
@@ -179,6 +168,50 @@ export function BudgetWidget() {
                   Subtract
                 </button>
               </form>
+            </div>
+
+            {/* Transaction history */}
+            <div className="flex-1 min-h-0 flex flex-col">
+              <div className="flex items-center gap-2 px-1 mb-2 shrink-0">
+                <Receipt className="w-3.5 h-3.5 text-white/30" />
+                <span className="text-xs font-medium text-white/30 uppercase tracking-wider">
+                  This month
+                </span>
+                {transactions.length > 0 && (
+                  <span className="ml-auto text-xs text-white/20 tabular-nums">
+                    {transactions.length} transaction{transactions.length !== 1 ? "s" : ""}
+                  </span>
+                )}
+              </div>
+
+              {transactions.length === 0 ? (
+                <div className="flex-1 flex items-center justify-center">
+                  <p className="text-xs text-white/20 italic">No transactions yet this month.</p>
+                </div>
+              ) : (
+                <ScrollArea className="flex-1 px-1">
+                  <div className="space-y-1">
+                    {transactions.map((tx) => (
+                      <div
+                        key={tx.id}
+                        className="flex items-center justify-between gap-3 py-2 px-2.5 rounded-lg hover:bg-white/[0.03] transition-colors group/tx"
+                      >
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-sm text-white/80 truncate">
+                            {tx.description ?? <span className="italic text-white/30">No description</span>}
+                          </span>
+                          <span className="text-[10px] text-white/30 mt-0.5">
+                            {formatDistanceToNow(new Date(tx.createdAt), { addSuffix: true })}
+                          </span>
+                        </div>
+                        <span className="shrink-0 text-sm font-mono font-medium text-red-400/80 tabular-nums">
+                          −${fmt(tx.amount)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              )}
             </div>
           </>
         )}

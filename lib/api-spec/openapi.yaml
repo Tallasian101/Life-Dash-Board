@@ -307,9 +307,24 @@ components:
         completed:
           type: boolean
 
+    BudgetTransaction:
+      type: object
+      required: [id, amount, month, createdAt]
+      properties:
+        id:
+          type: integer
+        amount:
+          type: number
+        description:
+          type: ["string", "null"]
+        month:
+          type: string
+        createdAt:
+          type: string
+
     BudgetStatus:
       type: object
-      required: [monthlyLimit, spent, remaining]
+      required: [monthlyLimit, spent, remaining, transactions]
       properties:
         monthlyLimit:
           type: number
@@ -317,6 +332,10 @@ components:
           type: number
         remaining:
           type: number
+        transactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/BudgetTransaction"
 
     SpendInput:
       type: object
