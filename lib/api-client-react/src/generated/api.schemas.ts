@@ -49,6 +49,28 @@ export interface TodoUpdate {
   completed?: boolean;
 }
 
+export interface FocusSessionInput {
+  /** ISO date string YYYY-MM-DD */
+  date: string;
+  /** @minimum 1 */
+  durationSeconds: number;
+}
+
+export interface FocusSession {
+  id: number;
+  date: string;
+  durationSeconds: number;
+  createdAt: string;
+}
+
+export interface FocusDaySummary {
+  /** ISO date YYYY-MM-DD */
+  date: string;
+  /** Short day label e.g. "Mon" */
+  label: string;
+  totalMinutes: number;
+}
+
 export interface Quote {
   text: string;
   author: string;

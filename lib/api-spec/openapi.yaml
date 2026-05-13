@@ -17,6 +17,8 @@ tags:
     description: To-do list management
   - name: quote
     description: Daily inspirational quote
+  - name: focus
+    description: Focus mode session tracking
 paths:
   /healthz:
     get:
@@ -144,6 +146,40 @@ paths:
         "404":
           description: Not found
 
+  /focus/sessions:
+    post:
+      operationId: saveFocusSession
+      tags: [focus]
+      summary: Save a completed focus session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FocusSessionInput"
+      responses:
+        "201":
+          description: Saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FocusSession"
+
+  /focus/week:
+    get:
+      operationId: getFocusWeek
+      tags: [focus]
+      summary: Get focus minutes per day for the current week (Mon–Sun)
+      responses:
+        "200":
+          description: Daily focus totals for the week
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FocusDaySummary"
+
   /quote:
     get:
       operationId: getDailyQuote
@@ -234,6 +270,43 @@ components:
           minLength: 1
         completed:
           type: boolean
+
+    FocusSessionInput:
+      type: object
+      required: [date, durationSeconds]
+      properties:
+        date:
+          type: string
+          description: ISO date string YYYY-MM-DD
+        durationSeconds:
+          type: integer
+          minimum: 1
+
+    FocusSession:
+      type: object
+      required: [id, date, durationSeconds, createdAt]
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+        durationSeconds:
+          type: integer
+        createdAt:
+          type: string
+
+    FocusDaySummary:
+      type: object
+      required: [date, label, totalMinutes]
+      properties:
+        date:
+          type: string
+          description: ISO date YYYY-MM-DD
+        label:
+          type: string
+          description: Short day label e.g. "Mon"
+        totalMinutes:
+          type: number
 
     Quote:
       type: object

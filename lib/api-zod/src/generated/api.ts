@@ -96,6 +96,25 @@ export const DeleteTodoParams = zod.object({
 });
 
 /**
+ * @summary Save a completed focus session
+ */
+
+export const SaveFocusSessionBody = zod.object({
+  date: zod.string().describe("ISO date string YYYY-MM-DD"),
+  durationSeconds: zod.number().min(1),
+});
+
+/**
+ * @summary Get focus minutes per day for the current week (Mon–Sun)
+ */
+export const GetFocusWeekResponseItem = zod.object({
+  date: zod.string().describe("ISO date YYYY-MM-DD"),
+  label: zod.string().describe('Short day label e.g. \"Mon\"'),
+  totalMinutes: zod.number(),
+});
+export const GetFocusWeekResponse = zod.array(GetFocusWeekResponseItem);
+
+/**
  * @summary Get today's daily quote
  */
 export const GetDailyQuoteResponse = zod.object({

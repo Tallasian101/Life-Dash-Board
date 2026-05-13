@@ -17,6 +17,9 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  FocusDaySummary,
+  FocusSession,
+  FocusSessionInput,
   GetWeatherParams,
   HealthStatus,
   NewsArticle,
@@ -593,6 +596,167 @@ export const useDeleteTodo = <
 > => {
   return useMutation(getDeleteTodoMutationOptions(options));
 };
+
+/**
+ * @summary Save a completed focus session
+ */
+export const getSaveFocusSessionUrl = () => {
+  return `/api/focus/sessions`;
+};
+
+export const saveFocusSession = async (
+  focusSessionInput: FocusSessionInput,
+  options?: RequestInit,
+): Promise<FocusSession> => {
+  return customFetch<FocusSession>(getSaveFocusSessionUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(focusSessionInput),
+  });
+};
+
+export const getSaveFocusSessionMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof saveFocusSession>>,
+    TError,
+    { data: BodyType<FocusSessionInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof saveFocusSession>>,
+  TError,
+  { data: BodyType<FocusSessionInput> },
+  TContext
+> => {
+  const mutationKey = ["saveFocusSession"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof saveFocusSession>>,
+    { data: BodyType<FocusSessionInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return saveFocusSession(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type SaveFocusSessionMutationResult = NonNullable<
+  Awaited<ReturnType<typeof saveFocusSession>>
+>;
+export type SaveFocusSessionMutationBody = BodyType<FocusSessionInput>;
+export type SaveFocusSessionMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Save a completed focus session
+ */
+export const useSaveFocusSession = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof saveFocusSession>>,
+    TError,
+    { data: BodyType<FocusSessionInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof saveFocusSession>>,
+  TError,
+  { data: BodyType<FocusSessionInput> },
+  TContext
+> => {
+  return useMutation(getSaveFocusSessionMutationOptions(options));
+};
+
+/**
+ * @summary Get focus minutes per day for the current week (Mon–Sun)
+ */
+export const getGetFocusWeekUrl = () => {
+  return `/api/focus/week`;
+};
+
+export const getFocusWeek = async (
+  options?: RequestInit,
+): Promise<FocusDaySummary[]> => {
+  return customFetch<FocusDaySummary[]>(getGetFocusWeekUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetFocusWeekQueryKey = () => {
+  return [`/api/focus/week`] as const;
+};
+
+export const getGetFocusWeekQueryOptions = <
+  TData = Awaited<ReturnType<typeof getFocusWeek>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getFocusWeek>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetFocusWeekQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getFocusWeek>>> = ({
+    signal,
+  }) => getFocusWeek({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getFocusWeek>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetFocusWeekQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getFocusWeek>>
+>;
+export type GetFocusWeekQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get focus minutes per day for the current week (Mon–Sun)
+ */
+
+export function useGetFocusWeek<
+  TData = Awaited<ReturnType<typeof getFocusWeek>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getFocusWeek>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetFocusWeekQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
 
 /**
  * @summary Get today's daily quote
